@@ -2,8 +2,8 @@ class Message {
   final String id;
   final String content;
   // final bool markAsRead;
-  final String userFrom;
-  final String userTo;
+  final String mentorID;
+  final String studentID;
   final DateTime createAt;
   final bool isMine;
 
@@ -11,14 +11,14 @@ class Message {
     required this.id,
     required this.content,
     // required this.markAsRead,
-    required this.userFrom,
-    required this.userTo,
+    required this.mentorID,
+    required this.studentID,
     required this.createAt,
     required this.isMine,
   });
 
   Message.create(
-      {required this.content, required this.userFrom, required this.userTo, required this.isMine})
+      {required this.content, required this.mentorID, required this.studentID, required this.isMine})
       : id = '',
         // markAsRead = false,
         // isMine = true,
@@ -28,16 +28,16 @@ class Message {
       : id = json['id'],
         content = json['content'],
         // markAsRead = json['mark_as_read'],
-        userFrom = json['user_from'],
-        userTo = json['user_to'],
+        mentorID = json['mentorID'],
+        studentID = json['studentID'],
         createAt = DateTime.parse(json['created_at']),
         isMine = json['isMine'];
 
   Map toMap() {
     return {
       'content': content,
-      'user_from': userFrom,
-      'user_to': userTo,
+      'mentorID': mentorID,
+      'studentID': studentID,
       'isMine': isMine
       // 'mark_as_read': markAsRead,
     };

@@ -1,11 +1,9 @@
 class GroupMessage {
   final String id;
   final String content;
-  // final bool markAsRead;
   final String groupID;
-  // final String userTo;
   final DateTime createAt;
-  final bool isMine;
+  final String mentorID;
 
   GroupMessage({
     required this.id,
@@ -14,14 +12,16 @@ class GroupMessage {
     required this.groupID,
     // required this.userTo,
     required this.createAt,
-    required this.isMine,
+    required this.mentorID,
   });
 
   GroupMessage.create(
-      {required this.content, required this.groupID})
+      {required this.content, required this.groupID, required this.mentorID})
       : id = '',
-      // markAsRead = false,
-        isMine = true,
+  // markAsRead = false,
+
+
+
         createAt = DateTime.now();
 
   GroupMessage.fromJson(Map<String, dynamic> json, String userId)
@@ -29,14 +29,16 @@ class GroupMessage {
         content = json['content'],
   // markAsRead = json['mark_as_read'],
         groupID = json['groupID'],
-        // userTo = json['user_to'],
+  // userTo = json['user_to'],
         createAt = DateTime.parse(json['created_at']),
-        isMine = json['user_from'] == userId;
+        mentorID = json['senderID'];
 
   Map toMap() {
     return {
       'content': content,
       'groupID': groupID,
+      'senderID': mentorID,
+      // 'isMine': isMine
       // 'user_to': userTo,
       // 'mark_as_read': markAsRead,
     };

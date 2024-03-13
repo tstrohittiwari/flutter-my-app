@@ -12,15 +12,15 @@ class ChatMainScreen extends StatefulWidget {
 
 class _ChatMainScreenState extends State<ChatMainScreen> {
 
+  // //MENTOR'S COUNCELLING
   // final  client = Supabase.instance.client;
   // final mentor = client.auth.currentUser();
-  // //MENTOR'S COUNCELLING
-  final String coun = "hsts";
-
   void getMentorcoun(coun) async{
     coun = await Supabase.instance.client.from('mentor').select('coun');
         // .eq('mentor_id', currentMentor);
   }
+
+  final String coun = "hsts";
 
   Future<List<Map<String, dynamic>>> fetchdata(coun) async {
     final response =

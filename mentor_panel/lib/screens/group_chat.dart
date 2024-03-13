@@ -1,25 +1,3 @@
-// import 'package:flutter/material.dart';
-//
-// class ChatScreen extends StatefulWidget {
-//   const ChatScreen({super.key});
-//
-//   @override
-//   State<ChatScreen> createState() => _ChatScreenState();
-// }
-//
-// class _ChatScreenState extends State<ChatScreen> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text("UserName"),
-//       ),
-//
-//     );
-//   }
-// }
-
-
 
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -31,7 +9,8 @@ import 'group_message_model.dart';
 
 class GroupChat extends StatefulWidget {
   final String groupID = "hsts"; //auth
-  final bool isMine = true;
+  final String mentorID = '20993e27-880e-4a3c-8de0-40f5284a9c98';
+
   // const ChatPage({Key? key}) : super(key: key);
   const GroupChat({Key? key}) : super(key: key);
   @override
@@ -55,34 +34,26 @@ class _GroupChatState extends State<GroupChat> {
       isAuthentificated() ? Supabase.instance.client.auth.currentUser!.email ?? '' : '';
 
 
-  // Future<String> _getUserTo(String studentID) async {
-  //   final response = await Supabase.instance.client
-  //       .from('studentdata')
-  //       .select('id')
-  //       .not('id', 'eq', getCurrentUserId())
-  //       .eq('id', studentID);
-  //
-  //
-  //   return response[0]['id'];
-  // }
-
-  Future<void> saveMessage(String content, String groupID) async {
+  Future<void> saveMessage(String content, String groupID, String mentorID) async {
     // final userTo = await _getUserTo(studentID);
     final userFrom = groupID;
 
     final message = GroupMessage.create(
-        content: content, groupID: groupID);
+        content: content, groupID: groupID, mentorID: widget.mentorID);
 
     await Supabase.instance.client.from('groupMessages').insert(message.toMap());
   }
 
 
 
-  Future<List<Map<String, dynamic>>> getMessages(groupID) async {
-    // final response = await Supabase.instance.client.from('messages').select('content');
-    final response = await Supabase.instance.client.from('groupMessages').select('content').eq('groupID', groupID);
-
-    return response;
+  Stream<List<Map<String, dynamic>>> getMessageStream(groupID) {
+    List<Map<String, dynamic>> payload;
+    return Supabase.instance.client
+        .from('groupMessages')
+        .stream(primaryKey: ['id'])
+        .eq('groupID', groupID)
+        .order('created_at')
+        .map((event) => event);
   }
 
   final _formKey = GlobalKey<FormState>();
@@ -100,8 +71,8 @@ class _GroupChatState extends State<GroupChat> {
     if (_formKey.currentState != null && _formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      await saveMessage(text, groupID);
-      await getMessages(groupID);
+      await saveMessage(text, groupID, widget.mentorID);
+      await getMessageStream(groupID);
       setState(() {
 
       });
@@ -120,7 +91,7 @@ class _GroupChatState extends State<GroupChat> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getMessages(widget.groupID);
+    getMessageStream(widget.groupID);
   }
 
   @override
@@ -134,8 +105,8 @@ class _GroupChatState extends State<GroupChat> {
       body:
 
 
-      FutureBuilder<List<Map<String, dynamic>>>(
-        future: getMessages(widget.groupID),
+      StreamBuilder<List<Map<String, dynamic>>>(
+        stream: getMessageStream(widget.groupID),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final messages = snapshot.data!;
@@ -150,8 +121,11 @@ class _GroupChatState extends State<GroupChat> {
                       itemCount: messages.length,
                       itemBuilder: (context, index) {
                         final message = messages[index]['content'];
+                        final senderID = messages[index]['senderID'];
 
-                        return GroupChatBubble(message: message,groupID: widget.groupID, isMine: widget.isMine);
+
+                        return GroupChatBubble(message: message, groupID: widget
+                            .groupID, senderID: senderID);
                       },
                     ),
                   ),
