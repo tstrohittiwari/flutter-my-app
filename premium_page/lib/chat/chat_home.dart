@@ -103,6 +103,7 @@ class _ChatHomeState extends State<ChatHome> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true),
       home: Container(
         decoration: BoxDecoration(
@@ -145,6 +146,7 @@ class _ChatHomeState extends State<ChatHome> {
                   itemBuilder: (context, index) {
                     final coun = councellingData![index]['councelling'];
                     final name = councellingData![index]['name'];
+                    // final gender = councellingData![index]['gender'];
                     return ListTile(
                       title: Column(
                         // Use Column as the title

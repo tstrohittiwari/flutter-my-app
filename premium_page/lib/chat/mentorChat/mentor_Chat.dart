@@ -1,56 +1,60 @@
 import 'package:flutter/material.dart';
-import 'package:premium_page/chat/mentorChat/mentor_Chat.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'group_message_model.dart';
-import 'group_chat_bubble.dart';
+import 'mentor_chat_bubble.dart';
+import 'mentor_message_model.dart';
 
-class ChatScreen extends StatefulWidget {
-  final String groupID = "hsts"; //auth
-  final bool isMine = false;
+class MentorChat extends StatefulWidget {
 
+  final String studentID; //AUTH
+
+  final String mentorID = '72598973-636d-4904-be43-cf8035f3144c'; //AUTH
+
+
+  // const ChatPage({Key? key}) : super(key: key);
+  const MentorChat({Key? key, required this.studentID}) : super(key: key);
   @override
-  _ChatScreenState createState() => _ChatScreenState();
+  State<MentorChat> createState() => _MentorChatState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _MentorChatState extends State<MentorChat> {
+
   bool isAuthentificated() => Supabase.instance.client.auth.currentUser != null;
 
   String getCurrentUserId() =>
       isAuthentificated() ? Supabase.instance.client.auth.currentUser!.id : '';
 
-  String getCurrentUserEmail() => isAuthentificated()
-      ? Supabase.instance.client.auth.currentUser!.email ?? ''
-      : '';
+  String getCurrentUserEmail() =>
+      isAuthentificated() ? Supabase.instance.client.auth.currentUser!.email ?? '' : '';
 
-  final studentID = '4be86abd-b268-48ee-b59b-02f8bbd92ee9'; //AUTH
 
-  Future<void> saveMessage(
-      String content, String groupID, String studentID) async {
+  Future<void> saveMessage(String content, String studentID, bool isMine) async {
     // final userTo = await _getUserTo(studentID);
-    final userFrom = groupID;
+    final userTo = studentID;
 
-    final message = GroupMessage.create(
-        content: content, groupID: groupID, studentID: studentID);
+    final message = Message.create(
+        content: content, mentorID: getCurrentUserId(), studentID: userTo,isMine: isMine);
 
-    await Supabase.instance.client
-        .from('groupMessages')
-        .insert(message.toMap());
+    await Supabase.instance.client.from('messages').insert(message.toMap());
   }
 
-  Stream<List<Map<String, dynamic>>> getMessageStream(groupID) {
+
+  Stream<List<Map<String, dynamic>>> getMessageStream(studentID) {
     List<Map<String, dynamic>> payload;
     return Supabase.instance.client
-        .from('groupMessages')
+        .from('messages')
         .stream(primaryKey: ['id'])
-        .eq('groupID', groupID)
+        .inFilter('mentorID, studentID',['cce395ef-9b79-4abf-972f-163d5926c6ef','4be86abd-b268-48ee-b59b-02f8bbd92ee9'] )
         .order('created_at')
         .map((event) => event);
   }
 
+
   final _formKey = GlobalKey<FormState>();
   final _msgController = TextEditingController();
 
-  Future<void> _submit(String groupID) async {
+
+
+  Future<void> _submit(String studentID, bool isMine) async {
     final text = _msgController.text;
 
     if (text.isEmpty) {
@@ -60,9 +64,12 @@ class _ChatScreenState extends State<ChatScreen> {
     if (_formKey.currentState != null && _formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      await saveMessage(text, groupID, studentID);
-      await getMessageStream(groupID);
-      setState(() {});
+      await saveMessage(text, studentID, isMine);
+      await getMessageStream(studentID);
+      isMine = true;
+      setState(() {
+
+      });
 
       _msgController.text = '';
     }
@@ -74,39 +81,29 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getMessageStream(widget.groupID);
+    getMessageStream(widget.studentID);
   }
 
   @override
   Widget build(BuildContext context) {
+
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Chat'),
-        actions: [
-          TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MentorChat(studentID: studentID),
-                  ),
-                );
-              },
-              child: Text("Mentor Chat"))
-        ],
       ),
       body:
+
+
       StreamBuilder<List<Map<String, dynamic>>>(
-        stream: getMessageStream(widget.groupID),
+        stream: getMessageStream(widget.studentID),
         builder: (context, snapshot) {
-          print(snapshot);
-          print("hi");
           if (snapshot.hasData) {
             final messages = snapshot.data!;
-
 
             return Padding(
               padding: const EdgeInsets.all(8.0),
@@ -118,11 +115,8 @@ class _ChatScreenState extends State<ChatScreen> {
                       itemCount: messages.length,
                       itemBuilder: (context, index) {
                         final message = messages[index]['content'];
-                        final senderID = messages[index]['senderID'];
-                        return GroupChatBubble(
-                            message: message,
-                            groupID: widget.groupID,
-                            senderID: senderID);
+                        final isMine = messages[index]['isMine'];
+                        return ChatBubble(message: message,studentID: widget.studentID, isMine: isMine,);
                       },
                     ),
                   ),
@@ -137,7 +131,11 @@ class _ChatScreenState extends State<ChatScreen> {
                               labelText: 'Message',
                               suffixIcon: IconButton(
                                 onPressed: () {
-                                  _submit(widget.groupID);
+
+                                  _submit(widget.studentID, true);
+                                  setState(() {
+
+                                  });
                                 },
                                 icon: const Icon(
                                   Icons.send_rounded,

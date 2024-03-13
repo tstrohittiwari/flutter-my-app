@@ -51,7 +51,8 @@ class GroupCard extends StatelessWidget {
                   style: TextStyle(fontSize: 50),
                 ),
                 GestureDetector(
-                  onTap: (){Navigator.push(
+                  onTap: (){
+                    Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => ChatScreen()),
                   );},
