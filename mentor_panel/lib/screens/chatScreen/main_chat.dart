@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:mentor_panel/screens/chatScreen/chat_screen.dart';
-import 'package:mentor_panel/screens/chatScreen/search_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ChatMainScreen extends StatefulWidget {
-  const ChatMainScreen({super.key});
+
+  //AUTH
+  // final councelling;
+  // const ChatMainScreen({Key? key, required this.councelling}) : super(key: key);
+
+  final councelling = 'hsts';
+  const ChatMainScreen({Key? key}) : super(key: key);
+
 
   @override
   State<ChatMainScreen> createState() => _ChatMainScreenState();
@@ -12,20 +18,13 @@ class ChatMainScreen extends StatefulWidget {
 
 class _ChatMainScreenState extends State<ChatMainScreen> {
 
-  // //MENTOR'S COUNCELLING
-  // final  client = Supabase.instance.client;
-  // final mentor = client.auth.currentUser();
-  void getMentorcoun(coun) async{
-    coun = await Supabase.instance.client.from('mentor').select('coun');
-        // .eq('mentor_id', currentMentor);
-  }
-
-  final String coun = "hsts";
-
-  Future<List<Map<String, dynamic>>> fetchdata(coun) async {
+  Future<List<Map<String, dynamic>>> fetchdata() async {
     final response =
-        await Supabase.instance.client.from('studentdata').select().eq('councelling', coun);
-
+    await Supabase.instance.client
+        .from('studentdata')
+        .select()
+        .eq('councelling', widget.councelling);
+    print(response);
     return response;
   }
 
@@ -34,38 +33,32 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
   @override
   void initState() {
     super.initState();
+
     _fetchData();
   }
 
   Future<void> _fetchData() async {
     try {
-      fetchedData = await fetchdata(coun);
+      fetchedData = await fetchdata();
     } catch (error) {}
   }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Students"),
-        actions: [
-          // IconButton(onPressed: (){
-          //   Navigator.push(
-          //     context,
-          //     MaterialPageRoute(
-          //       builder: (context) => ChatPage(),
-          //     ),
-          //   );
-          // }, icon: Icon(Icons.search))
-        ],
+
       ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: fetchdata(coun),
+      body:
+      FutureBuilder<List<Map<String, dynamic>>>(
+        future: fetchdata(),
         // Assuming fetchData() returns a Future<List<Map<String, dynamic>>>
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final data =
-                snapshot.data!; // Safe access to data after checking hasData
+            snapshot.data!; // Safe access to data after checking hasData
             return ListView.builder(
               itemCount: data.length,
               itemBuilder: (BuildContext context, int index) {
@@ -76,7 +69,8 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>  ChatPage(studentID: student['id']),
+                        builder: (context) =>
+                            ChatPage(studentID: student['id']),
                       ),
                     );
                   },
@@ -85,7 +79,8 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>  ChatPage(studentID: student['id']),
+                          builder: (context) =>
+                              ChatPage(studentID: student['id']),
                         ),
                       );
                     },
@@ -101,7 +96,7 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
           } else if (snapshot.hasError) {
             return Center(
                 child:
-                    Text('Error: ${snapshot.error}')); // Display error message
+                Text('Error: ${snapshot.error}')); // Display error message
           }
 
           // Show a loading indicator while fetching data

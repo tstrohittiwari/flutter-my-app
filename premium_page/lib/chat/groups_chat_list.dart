@@ -82,82 +82,105 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chat'),
-        actions: [
-          TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MentorChat(studentID: studentID),
-                  ),
-                );
-              },
-              child: Text("Mentor Chat"))
-        ],
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color.fromARGB(255, 80, 64, 47),
+            Color.fromARGB(255, 48, 39, 38),
+            Color.fromARGB(255, 28, 22, 25),
+            Color.fromARGB(255, 48, 39, 38),
+          ],
+        ),
       ),
-      body:
-      StreamBuilder<List<Map<String, dynamic>>>(
-        stream: getMessageStream(widget.groupID),
-        builder: (context, snapshot) {
-          print(snapshot);
-          print("hi");
-          if (snapshot.hasData) {
-            final messages = snapshot.data!;
-
-
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: ListView.builder(
-                      reverse: true,
-                      itemCount: messages.length,
-                      itemBuilder: (context, index) {
-                        final message = messages[index]['content'];
-                        final senderID = messages[index]['senderID'];
-                        return GroupChatBubble(
-                            message: message,
-                            groupID: widget.groupID,
-                            senderID: senderID);
-                      },
+      child: Scaffold(
+        backgroundColor: Colors.transparent.withOpacity(0),
+        appBar: AppBar(
+          iconTheme: IconThemeData(color: Colors.white),
+          backgroundColor: Colors.transparent.withOpacity(0),
+          title: const Text('Chat',style: TextStyle(color: Colors.white),),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MentorChat(studentID: studentID),
                     ),
-                  ),
-                  SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Form(
-                        key: _formKey,
-                        child: TextFormField(
-                          controller: _msgController,
-                          decoration: InputDecoration(
-                              labelText: 'Message',
-                              suffixIcon: IconButton(
-                                onPressed: () {
-                                  _submit(widget.groupID);
-                                },
-                                icon: const Icon(
-                                  Icons.send_rounded,
-                                  color: Colors.grey,
-                                ),
-                              )),
+                  );
+                },
+                child: Text("Mentor Chat",style: TextStyle(color: Colors.white),))
+          ],
+        ),
+        body:
+        StreamBuilder<List<Map<String, dynamic>>>(
+          stream: getMessageStream(widget.groupID),
+          builder: (context, snapshot) {
+            print(snapshot);
+            print("hi");
+            if (snapshot.hasData) {
+              final messages = snapshot.data!;
+
+
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        reverse: true,
+                        itemCount: messages.length,
+                        itemBuilder: (context, index) {
+                          final message = messages[index]['content'];
+                          DateTime createdTime = DateTime.parse(messages[index]['created_at']);
+                          final senderID = messages[index]['senderID'];
+                          return GroupChatBubble(
+                              message: message,
+                              groupID: widget.groupID,
+                              senderID: senderID,
+                            createdTime: createdTime,);
+                        },
+                      ),
+                    ),
+                    SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Form(
+                          key: _formKey,
+                          child: TextFormField(
+                            style: TextStyle(
+                              color: Colors.white
+                            ),
+                            controller: _msgController,
+                            decoration: InputDecoration(
+                                labelText: 'Message',
+                                labelStyle: TextStyle(color: Color.fromARGB(50, 255, 255, 255)),
+                                suffixIcon: IconButton(
+                                  onPressed: () {
+                                    _submit(widget.groupID);
+                                  },
+                                  icon: const Icon(
+                                    Icons.send_rounded,
+                                    color: Colors.indigo,
+                                  ),
+                                )),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 40.0)
-                ],
-              ),
-            );
-          }
+                    const SizedBox(height: 20.0)
+                  ],
+                ),
+              );
+            }
 
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        },
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        ),
       ),
     );
   }

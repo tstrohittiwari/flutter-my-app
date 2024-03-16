@@ -20,6 +20,11 @@ class Student {
 }
 
 class StudentDetails extends StatefulWidget {
+  //AUTH
+  // final councelling;
+  // const StudentDetails({Key? key,required this.councelling}) : super(key: key);
+
+  final councelling = 'hsts';
   const StudentDetails({Key? key}) : super(key: key);
 
   @override
@@ -27,18 +32,18 @@ class StudentDetails extends StatefulWidget {
 }
 
 class _StudentDetailsState extends State<StudentDetails> {
-  TextEditingController _controller1 = TextEditingController();
-  TextEditingController _controller2 = TextEditingController();
-  TextEditingController _controller3 = TextEditingController();
+  TextEditingController studentName = TextEditingController();
+  TextEditingController studentCategory = TextEditingController();
+  TextEditingController studentDomicile = TextEditingController();
 
-  //AUTH mentorInfo = //
-  // fetch mentor's councelling
-  final mentorCoun = "jossa";
 
-//FETCHING DATA FROM SUPABASE(JO ROHIT KO NHI AATA)
-  Future<List<Map<String, dynamic>>> fetchdata(mentorCoun) async {
+
+
+//FETCHING DATA FROM SUPABASE
+  Future<List<Map<String, dynamic>>> fetchdata() async {
     final response =
-        await Supabase.instance.client.from('studentdata').select().eq('councelling' , mentorCoun);
+        await Supabase.instance.client.from('studentdata').select().eq('councelling' , widget.councelling);
+    print(response);
     return response;
   }
 
@@ -47,12 +52,12 @@ class _StudentDetailsState extends State<StudentDetails> {
   @override
   void initState() {
     super.initState();
-    _fetchData(mentorCoun);
+    _fetchData(widget.councelling);
   }
 
   Future<void> _fetchData(mentorCoun) async {
     try {
-      fetchedData = await fetchdata(mentorCoun);
+      fetchedData = await fetchdata();
     } catch (error) {}
   }
 
@@ -65,19 +70,15 @@ class _StudentDetailsState extends State<StudentDetails> {
       'domicile': domicile.text,
     }).eq('id', currentStudentId); // Filter by id
 
-    // if (response.error != null) {
-    //   // Handle error
-    //   print(response.error!.message);
-    // } else {
-    //   // Update successful
-    //   print('Data updated successfully!');
-    // }
+    setState(() {
+
+    });
   }
   @override
   void dispose() {
-    _controller1.dispose();
-    _controller2.dispose();
-    _controller3.dispose();
+    studentName.dispose();
+    studentCategory.dispose();
+    studentDomicile.dispose();
     super.dispose();
   }
   //SUTEDNT DETAILS
@@ -148,7 +149,7 @@ class _StudentDetailsState extends State<StudentDetails> {
                                     Padding(
                                       padding: const EdgeInsets.all(8),
                                       child: TextField(
-                                        controller: _controller1,
+                                        controller: studentName,
                                         decoration: InputDecoration(
                                           labelText: 'Name',
                                           border: OutlineInputBorder(),
@@ -158,7 +159,7 @@ class _StudentDetailsState extends State<StudentDetails> {
                                     Padding(
                                       padding: const EdgeInsets.all(8),
                                       child: TextField(
-                                        controller: _controller2,
+                                        controller: studentCategory,
                                         decoration: InputDecoration(
                                           labelText: 'Category',
                                           border: OutlineInputBorder(),
@@ -168,7 +169,7 @@ class _StudentDetailsState extends State<StudentDetails> {
                                     Padding(
                                       padding: const EdgeInsets.all(8),
                                       child: TextField(
-                                        controller: _controller3,
+                                        controller: studentDomicile,
                                         decoration: InputDecoration(
                                           labelText: 'Domicile',
                                           border: OutlineInputBorder(),
@@ -181,7 +182,10 @@ class _StudentDetailsState extends State<StudentDetails> {
                                         child: const Text('Submit'),
                                         onPressed: () {
                                           // Do something with the text in _controller1.text and _controller2.text
-                                          _updateStudentDetails(map['id'], _controller1, _controller2,_controller3);
+
+                                          setState(() {
+                                            _updateStudentDetails(map['id'], studentName, studentCategory,studentDomicile);
+                                          });
                                           Navigator.of(context).pop();
                                           setState(() {
 
@@ -214,7 +218,7 @@ class _StudentDetailsState extends State<StudentDetails> {
       ),
       body:
       FutureBuilder<List<Map<String, dynamic>>>(
-        future: fetchdata(mentorCoun),
+        future: fetchdata(),
         // Assuming fetchData() returns a Future<List<Map<String, dynamic>>>
         builder: (context, snapshot) {
           if (snapshot.hasData) {

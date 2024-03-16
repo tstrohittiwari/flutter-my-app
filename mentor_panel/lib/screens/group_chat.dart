@@ -11,8 +11,11 @@ class GroupChat extends StatefulWidget {
   final String groupID = "hsts"; //auth
   final String mentorID = '20993e27-880e-4a3c-8de0-40f5284a9c98';
 
-  // const ChatPage({Key? key}) : super(key: key);
   const GroupChat({Key? key}) : super(key: key);
+
+  // AUTH
+  // final groupID;
+  // const GroupChat({Key? key,required this.groupID}) : super(key: key);
   @override
   State<GroupChat> createState() => _GroupChatState();
 }
