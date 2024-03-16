@@ -125,10 +125,9 @@ class _GroupChatState extends State<GroupChat> {
                       itemBuilder: (context, index) {
                         final message = messages[index]['content'];
                         final senderID = messages[index]['senderID'];
-
-
+                        DateTime createdTime = DateTime.parse(messages[index]['created_at']);
                         return GroupChatBubble(message: message, groupID: widget
-                            .groupID, senderID: senderID);
+                            .groupID, senderID: senderID, createdTime: createdTime);
                       },
                     ),
                   ),

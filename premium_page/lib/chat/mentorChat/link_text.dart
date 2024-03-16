@@ -12,11 +12,8 @@ class LinkText extends StatelessWidget {
     return TextButton(
       onPressed: () async {
         if (!await launchUrl(url)) {
-          throw Exception('Could not launch $url');
-        }  else {
-          // Handle unsupported URL scheme
           ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('Cannot open this link.')));
+              .showSnackBar(const SnackBar(content: Text('Could not launch link.'))); // Use a constant message
         }
       },
       child: Text(

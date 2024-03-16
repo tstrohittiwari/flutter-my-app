@@ -63,15 +63,7 @@ class _ChatBubbleState extends State<ChatBubble> {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 4,horizontal: 6),
-                        child: widget.message.contains('https')
-                            ? LinkText(
-                          url: Uri.parse(extractUrl(widget.message)),
-                          text: widget.message,
-                        )
-                            : Text(
-                          widget.message,
-                          style: const TextStyle(color: Colors.white),
-                        ),
+                        child: _buildMessageContent(widget.message),
                       ),
                     ),
                     Text(
@@ -106,6 +98,29 @@ class _ChatBubbleState extends State<ChatBubble> {
     return '';
   }
 
+  Widget _buildMessageContent(String message) {
+    final Uri? url;
+    if(message.startsWith('https', 0)){
+      url = Uri.tryParse(message);
+    }else if(message.startsWith('meet', 0) ||message.startsWith('drive', 0) ){
+      url = Uri.tryParse('https://$message');
+      print(url);
+    }
+
+    else{
+      url = null;
+    }
+    // Only treat the message as a URL if it has a valid URL format
+
+    print(url);
+    if (url!=null ) {
+      print("object");
+      return LinkText(url: url, text: message);
+    } else {
+      // Plain text message
+      return Text(message, style: const TextStyle(color: Colors.white));
+    }
+  }
 
   String getTimeText(DateTime createdTime) {
     final now = DateTime.now();

@@ -36,8 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return response[0]['councelling'];
   }
 
-  List<Map<String, dynamic>>? fetchedData;
-
+  // List<Map<String, dynamic>>? fetchedData;
+  //
   @override
   void initState() {
     super.initState();
@@ -50,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
       print(mentorCouncelling);
     } catch (error) {}
   }
+
 
 
   @override

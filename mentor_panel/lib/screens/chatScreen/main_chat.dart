@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mentor_panel/screens/chatScreen/chat_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+
+
 class ChatMainScreen extends StatefulWidget {
 
   //AUTH
@@ -17,6 +19,7 @@ class ChatMainScreen extends StatefulWidget {
 }
 
 class _ChatMainScreenState extends State<ChatMainScreen> {
+  final String mentorID = '20993e27-880e-4a3c-8de0-40f5284a9c98';
 
   Future<List<Map<String, dynamic>>> fetchdata() async {
     final response =
@@ -24,6 +27,7 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
         .from('studentdata')
         .select()
         .eq('councelling', widget.councelling);
+
     print(response);
     return response;
   }
@@ -33,7 +37,7 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
   @override
   void initState() {
     super.initState();
-
+      print(widget.councelling);
     _fetchData();
   }
 
@@ -54,7 +58,6 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
       body:
       FutureBuilder<List<Map<String, dynamic>>>(
         future: fetchdata(),
-        // Assuming fetchData() returns a Future<List<Map<String, dynamic>>>
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final data =

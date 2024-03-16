@@ -90,6 +90,8 @@ class ChatHome extends StatefulWidget {
 }
 
 class _ChatHomeState extends State<ChatHome> {
+
+  //AUTH
   final studentEmail = "4be86abd-b268-48ee-b59b-02f8bbd92ee9";
   List<Map<String, dynamic>>? councellingData;
 

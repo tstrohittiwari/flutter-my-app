@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:premium_page/chat/mentorChat/link_text.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class GroupChatBubble extends StatefulWidget {
@@ -118,10 +119,7 @@ class _GroupChatBubbleState extends State<GroupChatBubble> {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 4,horizontal: 6),
-                        child: Text(
-                          widget.message,
-                          style: const TextStyle(color: Colors.white),
-                        ),
+                        child: _buildMessageContent(widget.message),
                       ),
                     ),
                     Text(
@@ -174,6 +172,29 @@ class _GroupChatBubbleState extends State<GroupChatBubble> {
         // Older messages (including dates)
         return DateFormat('dd MMM, hh:mm a').format(localTime);  // "DD MMM, hh:mm a" (e.g., "09 Mar, 02:30 PM")
       }
+    }
+  }
+  Widget _buildMessageContent(String message) {
+    final Uri? url;
+    if(message.startsWith('https', 0)){
+      url = Uri.tryParse(message);
+    }else if(message.startsWith('meet', 0) ||message.startsWith('drive', 0) ){
+      url = Uri.tryParse('https://$message');
+      print(url);
+    }
+
+    else{
+      url = null;
+    }
+    // Only treat the message as a URL if it has a valid URL format
+
+    print(url);
+    if (url!=null ) {
+      print("object");
+      return LinkText(url: url, text: message);
+    } else {
+      // Plain text message
+      return Text(message, style: const TextStyle(color: Colors.white));
     }
   }
 }

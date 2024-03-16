@@ -75,8 +75,44 @@ Future<void> main() async {
 }
 
 
-class PremiumPage extends StatelessWidget {
+class PremiumPage extends StatefulWidget {
   const PremiumPage({super.key});
+
+  @override
+  State<PremiumPage> createState() => _PremiumPageState();
+}
+
+class _PremiumPageState extends State<PremiumPage> {
+
+  //AUTH CURRENT STUDETN ID
+//   final studentID = '4be86abd-b268-48ee-b59b-02f8bbd92ee9';
+//
+//   //FETCH CURRENT STUDENT EMAIL
+//   String? currentStudentEmial;
+//
+// //FETCHING DATA FROM SUPABASE
+//   Future<String> fetchdata() async {
+//     final response =
+//     await Supabase.instance.client.from('studentdata').select()
+//         .eq('ud' , studentID);
+//     return response[0]['email'];
+//   }
+//
+//   List<Map<String, dynamic>>? fetchedData;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     _fetchData();
+//   }
+//
+//   Future<void> _fetchData() async {
+//     try {
+//       currentStudentEmial = await fetchdata();
+//     } catch (error) {}
+//   }
+
+
 
   @override
   Widget build(BuildContext context) {

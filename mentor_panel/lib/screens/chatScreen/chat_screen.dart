@@ -128,9 +128,10 @@ class _ChatPageState extends State<ChatPage> {
                         if (messages[index]['mentorID'] == widget.mentorID) {
                           final message = messages[index]['content'];
                           final isMine = messages[index]['isMine'];
-                          return ChatBubble(message: message,
+                          DateTime createdTime = DateTime.parse(messages[index]['created_at']);                          return ChatBubble(message: message,
                             studentID: widget.studentID,
-                            isMine: isMine
+                            isMine: isMine,
+                            createdTime: createdTime,
                           );
                         }
                       },
